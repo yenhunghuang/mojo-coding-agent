@@ -1,0 +1,8 @@
+.pixi/
+__pycache__/
+*.pyc
+build/
+.env
+.env.*
+!.env.example
+.DS_Store

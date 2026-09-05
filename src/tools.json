@@ -1,0 +1,132 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "read",
+      "description": "Read a UTF-8 text file (at most 1 MiB) with line numbers. Returned output is bounded.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path inside the workspace; parent directory must exist."
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "First line, 1-based.",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of lines.",
+            "default": 200,
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "max_output": {
+            "type": "integer",
+            "description": "Maximum Unicode code points in output.",
+            "default": 16000,
+            "minimum": 1,
+            "maximum": 100000
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "write",
+      "description": "Create or overwrite a UTF-8 file. Parent must exist. Content at most 1 MiB.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path inside the workspace; parent directory must exist."
+          },
+          "content": {
+            "type": "string",
+            "description": "Complete new file content; empty is allowed."
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "edit",
+      "description": "Replace old_text exactly once. Reject missing or ambiguous matches, including overlaps. Read first.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path inside the workspace; parent directory must exist."
+          },
+          "old_text": {
+            "type": "string",
+            "description": "Nonempty exact text that occurs only once."
+          },
+          "new_text": {
+            "type": "string",
+            "description": "Replacement text; empty deletes the match."
+          }
+        },
+        "required": [
+          "path",
+          "old_text",
+          "new_text"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "bash",
+      "description": "Run a bash command in the workspace with no interactive stdin. Returns combined stdout/stderr, exit code, timeout and truncation flags. This is not a sandbox.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Shell command."
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "Timeout in seconds.",
+            "default": 30,
+            "minimum": 1,
+            "maximum": 300
+          },
+          "max_output": {
+            "type": "integer",
+            "description": "Maximum captured output bytes.",
+            "default": 16000,
+            "minimum": 1,
+            "maximum": 100000
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+]

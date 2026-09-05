@@ -1,0 +1,16 @@
+[workspace]
+authors = ["yenhunghuang <53628808+yenhunghuang@users.noreply.github.com>"]
+channels = ["https://conda.modular.com/max", "conda-forge"]
+name = "mojo-coding-agent"
+platforms = ["osx-arm64", "linux-64", "linux-aarch64"]
+version = "0.1.0"
+
+[tasks]
+start = "mojo src/main.mojo"
+test = { cmd = "mojo build -I src -I tests tests/test_agent.mojo -o build/test-agent && build/test-agent", depends-on = ["build"] }
+build = "mkdir -p build && mojo build src/main.mojo -o build/mojo-agent && cp src/tools.json build/tools.json"
+format = "mojo format src tests"
+
+[dependencies]
+mojo = "==1.0.0"
+curl = ">=8.22.0,<9"
