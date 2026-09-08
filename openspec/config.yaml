@@ -1,0 +1,17 @@
+schema: spec-driven
+
+context: |
+  規劃與規格文件使用繁體中文；OpenSpec 結構標題、SHALL/MUST、code snippets、
+  file paths、variable names、CLI commands 與無通行中文譯名的技術詞彙保留 English。
+  本專案用小型 coding agent 學習 Mojo，優先保持核心流程易讀、責任邊界清楚。
+  應用程式與測試均使用 Mojo；既有工具鏈為 Pixi，Mojo 固定 1.0.0，依賴由 pixi.lock 鎖定。
+  支援 macOS ARM64、Linux x86-64/ARM64；POSIX 程序實作不支援原生 Windows。
+  Windows 上執行 Mojo build/test 應使用 WSL Linux 環境。
+  模型介面為 OpenAI-compatible Chat Completions，通常透過 Bifrost 路由；curl 負責 HTTP/TLS。
+  src/main.mojo 與 config.mojo 負責 CLI；agent.mojo 負責 tool loop；client.mojo 負責模型協定；
+  tools.mojo 與 tools.json 定義 read/write/edit/bash；support/ 負責檔案、JSON、程序與 HTTP。
+  現有流程為單一任務、非串流、依序執行工具；REPL、session 持久化與 context 壓縮尚未實作。
+  檔案工具有 workspace 路徑檢查，但 bash 不是 sandbox；目前直接覆寫檔案，沒有交易或備份。
+  主要驗證為 pixi run test（離線 Mojo 測試及本機 HTTP 假模型，不需要 API key）；
+  編譯使用 pixi run build，格式化使用 pixi run format。CI 涵蓋 Linux x86-64 與 macOS ARM64。
+  專案背景見 README.md、docs/architecture.md 與 docs/learning.md；規劃變更時以相關程式與測試確認現況。
