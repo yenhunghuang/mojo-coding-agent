@@ -6,6 +6,7 @@
 
 - [目前實作架構](diagrams/current-architecture.html)：單次 prompt、非串流、記憶體內 tool loop。
 - [目標架構](diagrams/future-architecture.html)：加入 REPL、session 持久化、context 管理、重試與擴充機制後的建議設計。
+- [WebUI 與 Desktop 規劃](web-desktop-ui-plan.md)：Svelte 5／Tauri 2 選型、共用事件協定、安全邊界與分階段驗收；目前尚未實作。
 
 目標架構中的「⚑ 尚未實作」節點是規劃，不代表目前程式已具備這些能力。圖中的 SRC 連結指向目前程式或 `docs/architecture.md` 的擴充方向；candidate JSON 位於 `docs/diagrams/`，可在 Repository authoring 驗證後重建 HTML。
 

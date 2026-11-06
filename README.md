@@ -49,6 +49,8 @@ src/support/
 
 從 [逐步教學](docs/learning.md) 開始，再讀 [架構與擴充](docs/architecture.md)。先看核心流程，再進入 `support/` 的基礎設施。每一步都使用同一套程式，避免維護多份逐漸失同步的 agent。
 
+WebUI 與桌面版的選型及分階段設計見 [WebUI 與 Desktop 規劃](docs/web-desktop-ui-plan.md)；目前是規劃，不代表已提供 Web 服務或桌面應用程式。
+
 ## 四個工具
 
 | 工具 | 行為 | Mojo 練習重點 |
