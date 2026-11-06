@@ -2,6 +2,13 @@
 
 目標是讓初學者從入口一路追到副作用，不需要先理解框架。程式按責任切分；四個工具使用明確的 if 分派，沒有 registry、event bus 或多層繼承。
 
+## 架構圖
+
+- [目前實作架構](diagrams/current-architecture.html)：單次 prompt、非串流、記憶體內 tool loop。
+- [目標架構](diagrams/future-architecture.html)：加入 REPL、session 持久化、context 管理、重試與擴充機制後的建議設計。
+
+目標架構中的「⚑ 尚未實作」節點是規劃，不代表目前程式已具備這些能力。圖中的 SRC 連結指向目前程式或 `docs/architecture.md` 的擴充方向；candidate JSON 位於 `docs/diagrams/`，可在 Repository authoring 驗證後重建 HTML。
+
 ## 責任邊界
 
 | 模組 | 擁有的責任 | 擴充方向 |

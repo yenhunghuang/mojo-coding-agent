@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "目標架構｜現有程式延伸 vs 規劃新增",
+    "locale": "zh-TW",
+    "output": "docs/diagrams/future-architecture.html",
+    "quality_profile": "showcase",
+    "viewBox": [1240, 1180],
+    "repository": {
+      "url": "https://github.com/yenhunghuang/mojo-coding-agent",
+      "revision": "043e9308d307e2e978601e4f98acb81ce992d075"
+    },
+    "legend": {
+      "mode": "all",
+      "entries": {
+        "backend": {"label": "現有／延伸 Mojo 模組"},
+        "database": {"label": "現有 Workspace"},
+        "cloud": {"label": "外部模型服務"},
+        "security": {"label": "⚑ 規劃新增／尚未實作"},
+        "external": {"label": "使用者"}
+      }
+    },
+    "views": [
+      {"id": "new-only", "label": "★ 只看規劃新增", "focus": ["repl", "session", "store", "context", "retry", "policy", "events"], "note": "七個旗標節點皆為尚未實作的建議模組；箭頭與檔名是設計方向。"},
+      {"id": "conversation", "label": "REPL＋Session", "focus": ["user", "repl", "session", "store", "agent"], "note": "REPL 與 Session 協調器新增；main 與 agent 保留並延伸。"},
+      {"id": "context", "label": "Context 預算", "focus": ["session", "agent", "context", "client"], "note": "Context Manager 新增；完整持久化歷史與模型輸入分開。"},
+      {"id": "resilience", "label": "模型重試", "focus": ["agent", "client", "retry", "transport", "gateway"], "note": "Retry Policy 新增；不重跑已執行工具。"},
+      {"id": "extensions", "label": "擴充邊界", "focus": ["repl", "events", "agent", "policy", "tools", "client"], "note": "Output callback、Tool Registry／Policy 新增；executor 與同步 loop 保留。"}
+    ]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "使用者",
+      "sublabel": "prompt · 多輪追問",
+      "pos": [35, 260],
+      "size": [125, 70],
+      "sources": [{"path": "src/main.mojo", "line": 12, "end_line": 39}]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "現有｜agent.mojo",
+      "sublabel": "有界 tool loop · 延伸歷史介面",
+      "tag": "保留並延伸",
+      "pos": [305, 260],
+      "size": [220, 76],
+      "sources": [{"path": "src/agent.mojo", "line": 15, "end_line": 54}, {"path": "docs/architecture.md", "line": 7, "end_line": 17}]
+    },
+    {
+      "id": "client",
+      "type": "backend",
+      "label": "現有｜client.mojo",
+      "sublabel": "request · 驗證 · 延伸 usage",
+      "tag": "保留並延伸",
+      "pos": [595, 260],
+      "size": [200, 76],
+      "sources": [{"path": "src/client.mojo", "line": 8, "end_line": 57}, {"path": "docs/architecture.md", "line": 7, "end_line": 17}]
+    },
+    {
+      "id": "transport",
+      "type": "backend",
+      "label": "現有｜http.mojo",
+      "sublabel": "curl · timeout · 資源上限",
+      "tag": "保留傳輸",
+      "pos": [835, 260],
+      "size": [170, 76],
+      "sources": [{"path": "src/support/http.mojo", "line": 17, "end_line": 58}]
+    },
+    {
+      "id": "gateway",
+      "type": "cloud",
+      "label": "Bifrost／相容服務",
+      "sublabel": "OpenAI Chat Completions",
+      "pos": [835, 390],
+      "size": [170, 76],
+      "sources": [{"path": "src/support/http.mojo", "line": 18, "end_line": 22}]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "現有｜tools.mojo",
+      "sublabel": "read · write · edit · bash",
+      "tag": "保留 executor",
+      "pos": [305, 460],
+      "size": [220, 76],
+      "sources": [{"path": "src/tools.mojo", "line": 71, "end_line": 110}, {"path": "docs/architecture.md", "line": 7, "end_line": 17}]
+    },
+    {
+      "id": "workspace",
+      "type": "database",
+      "label": "現有｜Workspace",
+      "sublabel": "檔案與 POSIX 子程序副作用",
+      "pos": [305, 625],
+      "size": [220, 72],
+      "sources": [{"path": "src/support/files.mojo", "line": 15, "end_line": 53}, {"path": "src/support/process.mojo", "line": 47, "end_line": 160}]
+    },
+    {
+      "id": "repl",
+      "type": "security",
+      "label": "⚑ 新增｜repl.mojo（未來）",
+      "sublabel": "REPL · 逐行輸入 · commands",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [305, 1035],
+      "size": [220, 78],
+      "sources": [{"path": "docs/architecture.md", "line": 9, "end_line": 10}, {"path": "openspec/changes/interactive-streaming-cli/proposal.md", "line": 5, "end_line": 13}]
+    },
+    {
+      "id": "session",
+      "type": "security",
+      "label": "⚑ 未來｜Session",
+      "sublabel": "對話生命週期 · 完整歷史",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [605, 1035],
+      "size": [170, 78],
+      "sources": [{"path": "docs/architecture.md", "line": 9, "end_line": 10}, {"path": "docs/architecture.md", "line": 31, "end_line": 41}]
+    },
+    {
+      "id": "store",
+      "type": "security",
+      "label": "⚑ 未來｜Session Store",
+      "sublabel": "JSONL · metadata · 恢復",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [915, 1035],
+      "size": [210, 78],
+      "sources": [{"path": "docs/architecture.md", "line": 31, "end_line": 41}, {"path": "src/agent.mojo", "line": 46, "end_line": 54}]
+    },
+    {
+      "id": "context",
+      "type": "security",
+      "label": "⚑ 未來｜Context",
+      "sublabel": "usage · 預算 · 摘要／裁切",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [305, 60],
+      "size": [200, 78],
+      "sources": [{"path": "docs/architecture.md", "line": 10, "end_line": 11}, {"path": "docs/architecture.md", "line": 29, "end_line": 39}]
+    },
+    {
+      "id": "retry",
+      "type": "security",
+      "label": "⚑ 未來｜Retry Policy",
+      "sublabel": "暫時性錯誤 · 有界 backoff",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [555, 60],
+      "size": [170, 78],
+      "sources": [{"path": "docs/architecture.md", "line": 11, "end_line": 11}, {"path": "src/support/http.mojo", "line": 47, "end_line": 55}]
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "⚑ 未來｜Registry＋Policy",
+      "sublabel": "schema · allowlist · 審核 hook",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [555, 580],
+      "size": [225, 78],
+      "sources": [{"path": "src/tools.mojo", "line": 71, "end_line": 110}, {"path": "docs/architecture.md", "line": 37, "end_line": 41}]
+    },
+    {
+      "id": "events",
+      "type": "security",
+      "label": "⚑ 未來｜Output Sink",
+      "sublabel": "回答 · 工具進度 · 錯誤",
+      "tag": "⚑ 尚未實作",
+      "icon": "flag",
+      "pos": [555, 460],
+      "size": [170, 78],
+      "sources": [{"path": "src/agent.mojo", "line": 32, "end_line": 43}, {"path": "docs/architecture.md", "line": 35, "end_line": 38}]
+    }
+  ],
+
+  "connections": [
+    {"id": "input", "from": "user", "to": "agent", "label": "目前：單次 prompt", "variant": "emphasis"},
+    {"id": "ask", "from": "agent", "to": "client", "label": "messages", "variant": "emphasis"},
+    {"id": "post", "from": "client", "to": "transport", "label": "post_json", "variant": "emphasis"},
+    {"id": "https", "from": "transport", "to": "gateway", "label": "HTTPS · curl"},
+    {"id": "dispatch", "from": "agent", "to": "tools", "label": "目前：明確分派"},
+    {"id": "effects", "from": "tools", "to": "workspace", "label": "實際副作用"},
+    {"id": "budget", "from": "client", "to": "context", "label": "延伸保留 usage", "variant": "dashed"},
+    {"id": "retry", "from": "client", "to": "retry", "label": "暫時性失敗才重試", "variant": "dashed"},
+    {"id": "transport", "from": "retry", "to": "transport", "label": "重送 model request", "variant": "dashed"},
+    {"id": "submit", "from": "repl", "to": "session", "label": "逐行提交", "variant": "emphasis"},
+    {"id": "persist", "from": "session", "to": "store", "label": "有效訊息落盤／恢復", "variant": "dashed", "labelDy": -22},
+    {"id": "history", "from": "session", "to": "agent", "label": "延伸 submit 歷史", "variant": "dashed"},
+    {"id": "prepare", "from": "context", "to": "agent", "label": "預算內模型輸入", "variant": "dashed"},
+    {"id": "policy", "from": "agent", "to": "policy", "label": "執行前 hook", "variant": "dashed"},
+    {"id": "execute", "from": "policy", "to": "tools", "label": "允許後執行", "variant": "dashed"},
+    {"id": "notify", "from": "agent", "to": "events", "label": "進度 callback", "variant": "dashed"},
+    {"id": "render", "from": "events", "to": "repl", "label": "顯示回答與狀態", "variant": "dashed"},
+    {"id": "followup", "from": "repl", "to": "user", "label": "未來：多輪追問", "variant": "dashed"}
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "⚑ 一眼辨識未來新增",
+      "items": ["七個新增模組統一橘紅色＋旗標圖示＋「⚑ 未來」＋「⚑ 尚未實作」標籤", "橘紅色僅表示規劃狀態，不是安全或錯誤狀態；現有模組保留原色系", "按「★ 只看規劃新增」可聚焦全部新增節點；檔名僅為建議，非已存在模組"]
+    },
+    {
+      "dot": "emerald",
+      "title": "現有程式不被重寫",
+      "items": ["main、agent、client、http、tools 與 Workspace 保留原責任，只延伸介面", "Session 保存完整歷史；Context 只產生本次 request 的訊息", "重試只涵蓋尚未完成的模型 request，不重放 write／bash 副作用"]
+    },
+    {
+      "dot": "amber",
+      "title": "證據與設計的界線",
+      "items": ["SRC 指向現況程式與擴充文件；不代表新模組已落地", "Session JSONL、原子 metadata 與摘要策略皆為建議設計", "本版基於 main commit 043e9308；不表示五項能力已完成"]
+    }
+  ]
+}

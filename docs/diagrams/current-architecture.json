@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Mojo Coding Agent｜現階段架構",
+    "locale": "zh-TW",
+    "output": "docs/diagrams/current-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/yenhunghuang/mojo-coding-agent",
+      "revision": "043e9308d307e2e978601e4f98acb81ce992d075"
+    }
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "使用者",
+      "sublabel": "一次提交一個 prompt",
+      "pos": [40, 220],
+      "size": [140, 70],
+      "sources": [{"path": "src/main.mojo", "line": 12, "end_line": 39}]
+    },
+    {
+      "id": "entry",
+      "type": "frontend",
+      "label": "main.mojo",
+      "sublabel": "CLI 入口 · 讀取 tools.json",
+      "pos": [280, 220],
+      "size": [165, 72],
+      "sources": [{"path": "src/main.mojo", "line": 30, "end_line": 39}]
+    },
+    {
+      "id": "config",
+      "type": "frontend",
+      "label": "config.mojo",
+      "sublabel": "參數與環境設定",
+      "pos": [280, 360],
+      "size": [165, 68],
+      "sources": [{"path": "src/config.mojo", "line": 33, "end_line": 80}]
+    },
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "agent.mojo",
+      "sublabel": "記憶體歷史 · 有界 tool loop",
+      "tag": "最多 20 輪（可設定）",
+      "pos": [545, 220],
+      "size": [205, 72],
+      "sources": [{"path": "src/agent.mojo", "line": 15, "end_line": 54}]
+    },
+    {
+      "id": "client",
+      "type": "backend",
+      "label": "client.mojo",
+      "sublabel": "request · 完整性驗證",
+      "tag": "非串流",
+      "pos": [850, 220],
+      "size": [180, 72],
+      "sources": [{"path": "src/client.mojo", "line": 8, "end_line": 57}]
+    },
+    {
+      "id": "transport",
+      "type": "backend",
+      "label": "support/http.mojo",
+      "sublabel": "有界 curl · 私有暫存設定",
+      "pos": [850, 390],
+      "size": [180, 75],
+      "sources": [{"path": "src/support/http.mojo", "line": 17, "end_line": 58}]
+    },
+    {
+      "id": "gateway",
+      "type": "cloud",
+      "label": "Bifrost／相容服務",
+      "sublabel": "OpenAI Chat Completions",
+      "pos": [1100, 390],
+      "size": [205, 75],
+      "sources": [{"path": "src/support/http.mojo", "line": 18, "end_line": 22}]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "tools.mojo",
+      "sublabel": "read · write · edit · bash",
+      "tag": "明確 if 分派",
+      "pos": [545, 480],
+      "size": [205, 78],
+      "sources": [{"path": "src/tools.mojo", "line": 71, "end_line": 110}]
+    },
+    {
+      "id": "workspace",
+      "type": "database",
+      "label": "Workspace",
+      "sublabel": "檔案讀寫與 POSIX 程序",
+      "pos": [545, 650],
+      "size": [205, 72],
+      "sources": [{"path": "src/support/files.mojo", "line": 15, "end_line": 53}, {"path": "src/support/process.mojo", "line": 47, "end_line": 160}]
+    },
+    {
+      "id": "json",
+      "type": "backend",
+      "label": "support/json.mojo",
+      "sublabel": "共用 JSON 解析與建構",
+      "pos": [280, 520],
+      "size": [165, 70],
+      "sources": [{"path": "docs/architecture.md", "line": 19, "end_line": 21}]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "本機 Mojo 程序（macOS／Linux）",
+      "wraps": ["entry", "config", "loop", "client", "transport", "tools", "json"]
+    }
+  ],
+  "connections": [
+    {"id": "prompt", "from": "user", "to": "entry", "label": "單次任務", "variant": "emphasis"},
+    {"id": "parse", "from": "entry", "to": "config", "label": "解析設定"},
+    {"id": "run", "from": "entry", "to": "loop", "label": "run(config, schemas)", "variant": "emphasis"},
+    {"id": "ask", "from": "loop", "to": "client", "label": "完整 messages", "variant": "emphasis"},
+    {"id": "http", "from": "client", "to": "transport", "label": "post_json"},
+    {"id": "model", "from": "transport", "to": "gateway", "label": "HTTPS · curl", "variant": "emphasis"},
+    {"id": "dispatch", "from": "loop", "to": "tools", "label": "驗證後依序執行"},
+    {"id": "effects", "from": "tools", "to": "workspace", "label": "實際副作用"},
+    {"id": "answer", "from": "loop", "to": "user", "label": "最終文字 · 程序結束", "variant": "dashed"},
+    {"id": "results", "from": "tools", "to": "loop", "label": "tool results 回填", "variant": "dashed"}
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "已完成的核心",
+      "items": ["單次 prompt → model → tools → results 的完整閉環", "每輪最多 16 個工具；工具錯誤回傳模型修正", "JSON、檔案與 POSIX 子程序控制皆由 Mojo 實作"]
+    },
+    {
+      "dot": "amber",
+      "title": "目前的生命週期",
+      "items": ["對話只在一次 run() 的記憶體中存在；程序結束即消失", "沒有跨次追問、session 恢復或 context 自動裁切／摘要", "模型連線或協定失敗直接結束；不自動重試"]
+    },
+    {
+      "dot": "cyan",
+      "title": "擴充原則",
+      "items": ["保留小核心：REPL、session、context 在外圍接入", "以小型 callback 分離進度呈現，不把 UI 混入工具", "此圖依 commit 043e9308；SRC 可跳至對應原始碼"]
+    }
+  ]
+}
